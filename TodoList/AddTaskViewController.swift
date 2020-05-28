@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class AddTaskViewController: UIViewController {
 
@@ -109,7 +110,18 @@ class AddTaskViewController: UIViewController {
     }
     
     func insertNewTask() {
-        task.append(Task(title: taskTitleTextField.text!, description: taskDescriptionTextView.text!))
+        //task.append(Task(title: taskTitleTextField.text!, description: taskDescriptionTextView.text!))
+        
+        taskRealm.append(Task2(title: taskTitleTextField.text!, taskDescription: taskDescriptionTextView.text!))
+        
+        let task2 = Task2()
+        task2.title = taskTitleTextField.text!
+        task2.taskDescription = taskDescriptionTextView.text!
+        
+        let realm = try! Realm()
+        try! realm.write {
+            realm.add(task2)
+        }
         
         navigationController?.popViewController(animated: true)
         

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class EditTaskViewController: UIViewController {
 
@@ -115,6 +116,7 @@ class EditTaskViewController: UIViewController {
     func editTask() {
         //task[choosenRow] = Task(title: taskTitleTextField.text!, description: taskDescriptionTextView.text!)
         
+        /*
         if taskTitleTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) != "" {
             task[choosenRow].title = taskTitleTextField.text!
             if taskDescriptionTextView.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) != "" {
@@ -123,10 +125,28 @@ class EditTaskViewController: UIViewController {
         } else if taskDescriptionTextView.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) != "" {
             task[choosenRow].description = taskDescriptionTextView.text
         }
-        
-        /*
-        task[choosenRow] = Task(title: taskTitleTextField.text ?? "Default Task Title", description: taskDescriptionTextView.text ?? "Default Task Description")
         */
+ 
+        let realm = try! Realm()
+        let results = realm.objects(Task2.self)
+        //lprint(results[1].taskDescription)
+        
+        if taskTitleTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) != "" {
+            //task[choosenRow].title = taskTitleTextField.text!
+            try! realm.write {
+                //task2.title = "Realm updated title"
+                results[choosenRow].title = taskTitleTextField.text!
+            }
+            if taskDescriptionTextView.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) != "" {
+                try! realm.write {
+                    results[choosenRow].taskDescription = taskDescriptionTextView.text
+                }
+            }
+        } else if taskDescriptionTextView.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) != "" {
+            try! realm.write {
+                results[choosenRow].taskDescription = taskDescriptionTextView.text
+            }
+        }
         
         navigationController?.popToRootViewController(animated: true)
     }
