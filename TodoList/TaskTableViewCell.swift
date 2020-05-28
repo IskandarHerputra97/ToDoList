@@ -24,7 +24,7 @@ class TaskTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func set(task: Task) {
+    func set(task: Task2) {
         taskTitleLabel.text = task.title
     }
     

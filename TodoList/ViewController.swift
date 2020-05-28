@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import RealmSwift
 
 var task: [Task] = []
+var taskRealm = [Task2]()
 var choosenRow = 0
 
 var tempData = ""
@@ -34,6 +36,22 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        /*
+        let realm = try! Realm()
+        print(Realm.Configuration.defaultConfiguration.fileURL)
+        
+        var task2 = Task2()
+        task2.title = "Learn realm new"
+        task2.taskDescription = "New description here"
+        */
+ 
+        //write data
+        /*
+        try! realm.write {
+            realm.add(task2)
+        }
+        */
+        
         
         setupNavigationBarItem()
         setupTableView()
@@ -42,6 +60,7 @@ class ViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        readRealmData()
         tableView.reloadData()
     }
     
@@ -89,21 +108,40 @@ class ViewController: UIViewController {
     }
 }
 
+//MARK: - ACTIONS
+//read data
+func readRealmData() {
+    let realm = try! Realm()
+    let results = realm.objects(Task2.self)
+    
+    print(results[1].taskDescription)
+    
+    taskRealm.removeAll()
+    
+    for i in results {
+        taskRealm.append(Task2(title: i.title ?? "Default value", taskDescription: i.taskDescription ?? "default description"))
+    }
+}
+
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return task.count
+        //return task.count
+        return taskRealm.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cells.taskCell) as! TaskTableViewCell
-        let myTask = task[indexPath.row]
-        cell.set(task: myTask)
+        //let myTask = task[indexPath.row]
+        //cell.set(task: myTask)
+        
+        let myTask2 = taskRealm[indexPath.row]
+        cell.set(task: myTask2)
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        taskTableCellTapped(taskIndex: indexPath.row, taskTitle: task[indexPath.row].title, taskDescription: task[indexPath.row].description)
+        taskTableCellTapped(taskIndex: indexPath.row, taskTitle: taskRealm[indexPath.row].title!, taskDescription: taskRealm[indexPath.row].taskDescription!)
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -112,7 +150,16 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            task.remove(at: indexPath.row)
+            //task.remove(at: indexPath.row)
+            
+            let realm = try! Realm()
+            let results = realm.objects(Task2.self)
+            
+            try! realm.write {
+                realm.delete(results[indexPath.row])
+            }
+            
+            readRealmData()
             
             tableView.beginUpdates()
             tableView.deleteRows(at: [indexPath], with: .automatic)
