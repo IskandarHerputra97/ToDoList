@@ -117,6 +117,9 @@ class EditTaskViewController: UIViewController {
         
         if taskTitleTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) != "" {
             task[choosenRow].title = taskTitleTextField.text!
+            if taskDescriptionTextView.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) != "" {
+                task[choosenRow].description = taskDescriptionTextView.text
+            }
         } else if taskDescriptionTextView.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) != "" {
             task[choosenRow].description = taskDescriptionTextView.text
         }
